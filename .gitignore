@@ -1,0 +1,8 @@
+*.dump/
+*.scknobb/
+
+log/*
+*/log/*
+
+.vscode
+.vscode/*

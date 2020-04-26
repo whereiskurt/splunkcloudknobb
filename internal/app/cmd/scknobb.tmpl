@@ -1,0 +1,56 @@
+{{ define "AppHeader" }}          _                _     _     
+ ___  ___| | ___ __   ___ | |__ | |__    
+/ __|/ __| |/ / '_ \ / _ \| '_ \| '_ \  {{.ReleaseDate}}
+\__ \ (__|   <| | | | (_) | |_) | |_) | {{.ReleaseVersion}} 
+|___/\___|_|\_\_| |_|\___/|_.__/|_.__/  {{.GitHash}} 
+                                         
+> Splunk Cloud KNowledge OBject Backup 
+
+An CLI interface into the Splunk Cloud using Go!
+
+Find more information at:
+    https://github.com/whereiskurt/scknobb/
+{{ end }}
+
+{{ define "AppUsage" }}
+Usage:
+    scknobb [GLOBAL] [COMMAND] [SUBCOMMAND] [ACTION ...] [OPTIONS]
+
+Global Options:
+    Verbosity:
+      --level=3         Sets the output verbosity level numerically [default]
+      --silent,  -s     Set logging/output level [level1]
+      --quiet,   -q     Set logging/output level [level2]
+      --info,           Set logging/output level [level3-default]
+      --debug,   -v     Set logging/output level [level4]
+      --trace,   -vv    Output to STDOUT and to log file [level5]
+{{ end }}
+
+{{ define "AppUsageExample" }}
+Commands:
+    backup     Backup knowledge objects
+
+Examples:
+    $ scknobb backup dashboards
+
+For more help:
+    $ scknobb help backup
+    
+{{ end }}
+
+{{ define "PromptNewConnfiguration" }}
+-------------------------------------------------------------------------------
+No Configuration File Found: '{{.Filename}}'
+-------------------------------------------------------------------------------
+[Is this your first run, perhaps? WELCOME!! :)]
+
+To connect you must provide your 1) Splunk Cloud instance URL 2) username and 
+3) password. These values are encrypted with 4) the crypto key when storing in
+the users $HomeDir.
+
+NOTE: You will have the option to not save cryptokey and provide it during 
+      program invocation with '--key' as a parameter.
+
+Please provide the required values:
+
+{{ end }}
