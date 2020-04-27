@@ -33,6 +33,10 @@ Use '`scknobb help backup`' to see more details.
 
 **Dedicated to: PTaddy, DeeMaCK, KMaze, sc0ttys1n, trizz13.**
 
+### Example: Windows
+<img src="https://github.com/whereiskurt/splunkcloudknobb/blob/master/doc/images/win.example.help.png" >
+
+
 ### Backup Dashboards to Local Filesystem
 
 ```shell
