@@ -38,7 +38,7 @@ func (a AuthCookies) String() string {
 	return s
 }
 
-func authCookieDecorate(auth AuthCookies, client *http.Client, req *http.Request) {
+func (s *Service) authCookieDecorate(auth AuthCookies, client *http.Client, req *http.Request) {
 	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
 	var cookies []*http.Cookie
@@ -54,7 +54,7 @@ func authCookieDecorate(auth AuthCookies, client *http.Client, req *http.Request
 }
 
 // Login takes a username and password, executed 4 steps to login, and returns auth cookies
-func Login(u string, username string, password string, cookiePort string, log *log.Logger) (AuthCookies, error) {
+func (s *Service) Login(u string, username string, password string, cookiePort string, log *log.Logger) (AuthCookies, error) {
 	var authd AuthCookies
 
 	authd.DTS = time.Now().Format("20060102T150405")
@@ -66,7 +66,7 @@ func Login(u string, username string, password string, cookiePort string, log *l
 	authd.CookiePort = cookiePort
 
 	// splunkuuid == experience_id also
-	cval, splunkuuid, err := step1(u)
+	cval, splunkuuid, err := s.step1(u)
 	if err != nil || cval == "" || splunkuuid == "" {
 		//log.Error("error: %v, cval: %s, splunk_uuid: %s\n", err, cval, splunkuuid)
 		err = fmt.Errorf("failed Authentication Step 1: invalid url, username, or password: values ('%s', '%s')", u, username)
@@ -75,14 +75,14 @@ func Login(u string, username string, password string, cookiePort string, log *l
 	authd.SplunkUUID = splunkuuid
 	authd.Cvalue = cval
 
-	tsession, err := step2(u, authd.CookiePort)
+	tsession, err := s.step2(u, authd.CookiePort)
 	if err != nil || tsession == "" {
 		fmt.Printf("error: %v, tempsess: %s\n", err, tsession)
 		err = errors.New("failed on auth Step 2")
 		return AuthCookies{}, err
 	}
 
-	sessionid, err := step3(u, tsession, authd.CookiePort)
+	sessionid, err := s.step3(u, tsession, authd.CookiePort)
 	if err != nil || sessionid == "" {
 		err = errors.New("failed on auth Step 3")
 		fmt.Printf("error: %v, session_id_%s: %s\n", err, authd.CookiePort, sessionid)
@@ -91,7 +91,7 @@ func Login(u string, username string, password string, cookiePort string, log *l
 	authd.SessionID = sessionid
 
 	//splunkwebcsrf also known as token_key
-	splunkd, splunkwebcsrf, expiry, err := step4(u, cval, splunkuuid, sessionid, username, password, authd.CookiePort)
+	splunkd, splunkwebcsrf, expiry, err := s.step4(u, cval, splunkuuid, sessionid, username, password, authd.CookiePort)
 	if err != nil || splunkd == "" || splunkwebcsrf == "" {
 		err = errors.New("failed Authentication Step 4: likey wrong username or password")
 		fmt.Printf("error: %v, splunkd_%s: %s, splunkweb_csrf_token_%s:%s\n", err, authd.CookiePort, splunkd, authd.CookiePort, splunkwebcsrf)
@@ -106,10 +106,10 @@ func Login(u string, username string, password string, cookiePort string, log *l
 	return authd, nil
 }
 
-func step1(u string) (string, string, error) {
+func (s *Service) step1(u string) (string, string, error) {
 	var url = u + "account/login?return_to=%2Fen-US%2F"
 
-	client, req, err := authGetRequest(url)
+	client, req, err := s.authGetRequest(url)
 	if err != nil {
 		return "", "", err
 	}
@@ -136,10 +136,10 @@ func step1(u string) (string, string, error) {
 	return cval, splunkwebuid, nil
 }
 
-func step2(u string, cookiePort string) (string, error) {
+func (s *Service) step2(u string, cookiePort string) (string, error) {
 	var url = u + `config?autoload=1`
 
-	client, req, err := authGetRequest(url)
+	client, req, err := s.authGetRequest(url)
 	if err != nil {
 		return "", err
 	}
@@ -166,10 +166,10 @@ func step2(u string, cookiePort string) (string, error) {
 	return sessionid, nil
 }
 
-func step3(u string, tsess string, cookiePort string) (string, error) {
+func (s *Service) step3(u string, tsess string, cookiePort string) (string, error) {
 	var url = u + `config`
 
-	client, req, err := authGetRequest(url)
+	client, req, err := s.authGetRequest(url)
 	if err != nil {
 		return "", err
 	}
@@ -201,7 +201,7 @@ func step3(u string, tsess string, cookiePort string) (string, error) {
 	return sessionid, nil
 }
 
-func step4(u, cval, splunkuuid, sessionid, username, password, cookiePort string) (splunkd string, csrf string, expiry string, err error) {
+func (s *Service) step4(u, cval, splunkuuid, sessionid, username, password, cookiePort string) (splunkd string, csrf string, expiry string, err error) {
 	var url = u + `account/login`
 
 	returnto := urls.PathEscape("/en-US/")
@@ -210,7 +210,7 @@ func step4(u, cval, splunkuuid, sessionid, username, password, cookiePort string
 
 	body := fmt.Sprintf("cval=%s&username=%s&password=%s&return_to=%s", cval, username, password, returnto)
 
-	client, req, err := authPostRequest(url, strings.NewReader(body))
+	client, req, err := s.authPostRequest(url, strings.NewReader(body))
 
 	var cookies []*http.Cookie
 	expire := time.Now().AddDate(0, 0, 1)

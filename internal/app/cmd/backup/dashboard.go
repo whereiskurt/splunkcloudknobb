@@ -14,11 +14,12 @@ import (
 func (c *Cmd) Dashboard(cmd *cobra.Command, args []string) {
 	config := c.Config
 	log := config.Log
+	s := service.NewService(log)
 
 	config.CLI.Prompt("\n")
 	config.CLI.Prompt("Starting backup for dashboards...\n\n")
 
-	auth, err := service.Login(config.URL, config.Username, config.Password, config.CookiePort, config.Log)
+	auth, err := s.Login(config.URL, config.Username, config.Password, config.CookiePort, config.Log)
 	if err != nil {
 		log.Fatalf("fatal: Splunk Cloud Authentication: %+v", err)
 	}
@@ -28,7 +29,7 @@ func (c *Cmd) Dashboard(cmd *cobra.Command, args []string) {
 	chand := make(chan service.Dashboard)
 	go func() {
 		log.Infof("Retrieving Dashboard Listing for ALL dashboards ... ")
-		err := service.ListDashboard(auth, chand)
+		err := s.ListDashboard(auth, chand)
 		if err != nil {
 			log.Fatalf("fatal: couldn't retrieve dashbaords lists: %s", err)
 		}

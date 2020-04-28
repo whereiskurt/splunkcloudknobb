@@ -21,7 +21,7 @@ type Report struct {
 }
 
 // ListReport returns all the reports for the user
-func ListReport(auth AuthCookies, chanr chan Report) error {
+func (s *Service) ListReport(auth AuthCookies, chanr chan Report) error {
 	defer close(chanr)
 
 	const query = `output_mode=json&sort_dir=asc&sort_key=name&sort_mode=natural&sort_mode=natural&search=NOT ((is_scheduled=1 AND (alert_type!=always OR alert.track=1 OR (dispatch.earliest_time="rt*" AND dispatch.latest_time="rt*" AND actions="*" AND actions!="")))) AND (eai:acl.owner="%s") AND ((eai:acl.sharing="user" AND eai:acl.owner="%s") OR (eai:acl.sharing!="user")) AND is_visible=1&count=%d&offset=%d`
@@ -33,13 +33,13 @@ PAGING:
 		u := auth.URL + `splunkd/__raw/servicesNS/-/search/saved/searches?`
 		url := u + urls.PathEscape(fmt.Sprintf(query, auth.Username, auth.Username, size, offset))
 
-		client, req, err := authGetRequest(url)
+		client, req, err := s.authGetRequest(url)
 		if err != nil {
 			err := errors.New("failed to create request to ListReports")
 			return err
 		}
-		authCookieDecorate(auth, client, req)
-		body, err := retryRequest("Report", client, req)
+		s.authCookieDecorate(auth, client, req)
+		body, err := s.retryRequest("Report", client, req)
 		if err != nil {
 			return err
 		}

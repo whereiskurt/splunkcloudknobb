@@ -13,11 +13,12 @@ import (
 func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 	config := c.Config
 	log := config.Log
+	s := service.NewService(log)
 
 	config.CLI.Prompt("\n")
 	config.CLI.Prompt("Starting backup for Reports...\n\n")
 
-	auth, err := service.Login(config.URL, config.Username, config.Password, config.CookiePort, config.Log)
+	auth, err := s.Login(config.URL, config.Username, config.Password, config.CookiePort, config.Log)
 	if err != nil {
 		log.Fatalf("fatal: Splunk Cloud Authentication: %+v", err)
 	}
@@ -27,19 +28,19 @@ func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 	chanr := make(chan service.Report)
 	go func() {
 		log.Infof("Retrieving Reports Listing for ALL reports ... ")
-		err := service.ListReport(auth, chanr)
+		err := s.ListReport(auth, chanr)
 		if err != nil {
 			log.Fatalf("fatal: couldn't retrieve report lists: %s", err)
 		}
 		config.CLI.Prompt("\n√ Fetched report listing for ALL reports ... ")
 	}()
 
-	folder := filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS), "report")
+	folder := filepath.Join(c.Config.OutputFolder, "report")
 	abs, _ := filepath.Abs(folder)
 	log.Infof("Creating backup report folder named '%s%c'", abs, os.PathSeparator)
 	os.MkdirAll(abs, 0777)
 
-	rawfolder := filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS), "report", "raw")
+	rawfolder := filepath.Join(c.Config.OutputFolder, "report", "raw")
 	rawabs, _ := filepath.Abs(rawfolder)
 	log.Infof("Creating backup report folder named '%s%c'", rawabs, os.PathSeparator)
 	os.MkdirAll(rawabs, 0777)

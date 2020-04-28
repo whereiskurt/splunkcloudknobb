@@ -20,17 +20,17 @@ type SearchHistoryResult struct {
 }
 
 // ListSearchHistory fills the channel with search history entry
-func ListSearchHistory(auth AuthCookies, chansh chan SearchHistoryResult) (err error) {
+func (s *Service) ListSearchHistory(auth AuthCookies, chansh chan SearchHistoryResult) (err error) {
 	defer close(chansh)
 
 	search := urls.QueryEscape(`| history | search NOT search="| history*" AND NOT search="*metadata*" AND NOT search="*loadjob*" AND NOT savedsearch_name="*" AND NOT search="search" AND NOT search="*from sid*" AND NOT search="| eventcount summarize=false index=* index=_**" AND NOT provenance="UI:LocateData" AND NOT provenance="UI:TableEditor" AND NOT provenance="UI:DataModel" AND NOT provenance="UI:Pivot" AND NOT provenance="UI:Dataset" | dedup search | head 100000`)
 
-	jobSID, err := submitSearchJob(auth, search)
+	jobSID, err := s.submitSearchJob(auth, search)
 	if err != nil {
 		return err
 	}
 
-	err = waitForDone(auth, jobSID)
+	err = s.waitForDone(auth, jobSID)
 	if err != nil {
 		return err
 	}
@@ -44,14 +44,14 @@ PAGING:
 		// Non of these params need ay escaping.
 		url := auth.URL + fmt.Sprintf(query, jobSID, offset, size, urls.PathEscape("|search"))
 
-		client, req, err := authGetRequest(url)
+		client, req, err := s.authGetRequest(url)
 		if err != nil {
 			err := fmt.Errorf("failed to create request for Search History Results")
 			return err
 		}
-		authCookieDecorate(auth, client, req)
+		s.authCookieDecorate(auth, client, req)
 
-		body, err := retryRequest("SearchHistoryResults", client, req)
+		body, err := s.retryRequest("SearchHistoryResults", client, req)
 		if err != nil {
 			return err
 		}
@@ -100,20 +100,20 @@ func translateSearchHistory(body *[]byte, chansh chan SearchHistoryResult) (tota
 	return total, count, nil
 }
 
-func submitSearchJob(auth AuthCookies, search string) (sid string, err error) {
+func (s *Service) submitSearchJob(auth AuthCookies, search string) (sid string, err error) {
 
 	searchBody := fmt.Sprintf(`rf=*&auto_cancel=30&status_buckets=300&output_mode=json&search=%s&earliest_time=0&preview=false&provenance=UI:Search`, search)
 
 	jobURL := auth.URL + fmt.Sprintf(`splunkd/__raw/servicesNS/%s/search/search/jobs`, urls.PathEscape(auth.Username))
 
-	client, req, err := authPostRequest(jobURL, strings.NewReader(searchBody))
+	client, req, err := s.authPostRequest(jobURL, strings.NewReader(searchBody))
 	if err != nil {
 		return "", err
 	}
-	authCookieDecorate(auth, client, req)
+	s.authCookieDecorate(auth, client, req)
 	req.Header.Add("X-Splunk-Form-Key", auth.SplunkWebCSRF)
 
-	searchbody, err := retryRequest("SearchHistoryJob", client, req)
+	searchbody, err := s.retryRequest("SearchHistoryJob", client, req)
 	if err != nil {
 		return "", err
 	}
@@ -138,7 +138,7 @@ func translateJobSID(body *[]byte) (sid string, err error) {
 	return src.SID, nil
 }
 
-func waitForDone(auth AuthCookies, jobSID string) (reterr error) {
+func (s *Service) waitForDone(auth AuthCookies, jobSID string) (reterr error) {
 	const size = 100
 	const maxloops = 15
 	var loopcount = 0
@@ -151,14 +151,14 @@ CHECK:
 		const statusURL = `splunkd/__raw/servicesNS/%s/search/search/jobs/%s?output_mode=json`
 		url := auth.URL + fmt.Sprintf(statusURL, urls.PathEscape(auth.Username), urls.PathEscape(jobSID))
 
-		client, req, err := authGetRequest(url)
+		client, req, err := s.authGetRequest(url)
 		if err != nil {
 			err := fmt.Errorf("failed to create request to check search history job status: %v", err)
 			return err
 		}
-		authCookieDecorate(auth, client, req)
+		s.authCookieDecorate(auth, client, req)
 
-		body, err := retryRequest("SearchHistoryStatus", client, req)
+		body, err := s.retryRequest("SearchHistoryStatus", client, req)
 		if err != nil {
 			return err
 		}
