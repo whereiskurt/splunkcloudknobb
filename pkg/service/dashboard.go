@@ -18,6 +18,7 @@ type Dashboard struct {
 	Owner    string
 	Content  string
 	RawEntry string //json returned from the call that built it.
+        App      string //Name of the app the dash originates
 }
 
 // ListDashboard returns ALL dashboards returns an array of dasboards from the call
@@ -82,7 +83,7 @@ func translateDashboard(body *[]byte, chand chan Dashboard) (total int, count in
 			log.Fatalf("JSON marshal unexpected error")
 		}
 		d.RawEntry = string(bb)
-
+                d.App = e.Content.EaiAppName
 		chand <- d
 	}
 
