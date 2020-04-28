@@ -52,7 +52,7 @@ func (c *Cmd) SearchHistory(cmd *cobra.Command, args []string) {
 	for r := range chanr {
 		config.CLI.Prompt(".")
 
-		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.spl", r.SearchID))
+		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.splunk.txt", r.SearchID))
 		c.writeContent(r.Search, filenamexml)
 		c.touchFile(filenamexml, r.Time)
 
@@ -65,7 +65,7 @@ func (c *Cmd) SearchHistory(cmd *cobra.Command, args []string) {
 		count = count + 1
 	}
 
-	log.Info(fmt.Sprintf("\n√ Wrote '%d' search histories \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
+	log.Info(fmt.Sprintf("Wrote '%d' search histories folder '%s%c'", count, abs, os.PathSeparator))
 	config.CLI.Prompt(fmt.Sprintf("\n√ Wrote '%d' search histories \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
 
 	log.Infof("Done. Wrote '%dkb' total of content. :-)", totalbytes)

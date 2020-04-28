@@ -55,6 +55,7 @@ func NewApp(config *config.Config) (a *App) {
 	flagS("Username", &a.Config.Username, []string{"user"}, a.RootCmd)
 	flagS("CookiePort", &a.Config.CookiePort, []string{"port", "cookiePort"}, a.RootCmd)
 	flagS("URL", &a.Config.URL, []string{"url"}, a.RootCmd)
+	flagS("OutputFolder", &a.Config.OutputFolder, []string{"out", "target"}, a.RootCmd)
 	flagS("CryptoKey", &a.Config.CryptoKey, []string{"key", "k"}, a.RootCmd)
 	flagS("VerboseLevel", &a.Config.VerboseLevel, []string{"level"}, a.RootCmd)
 	flagB("VerboseLevel1", &a.Config.VerboseLevel1, []string{"Q", "silent"}, a.RootCmd)
@@ -85,6 +86,9 @@ func (a *App) InvokeCLI() {
 		a.Config.CLI.Stderr("AppUsage", nil)
 		a.Config.CLI.Stderr("AppUsageExample", nil)
 	} else {
+		os.MkdirAll(a.Config.LogFolder, 0777)
+		// os.MkdirAll(a.Config.OutputFolder, 0777)
+
 		// Call Cobra Execute which will PreRun and select the Command to execute.
 		_ = a.RootCmd.Execute()
 	}

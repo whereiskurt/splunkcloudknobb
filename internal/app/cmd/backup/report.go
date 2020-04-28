@@ -51,7 +51,7 @@ func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 	for r := range chanr {
 		config.CLI.Prompt(".")
 
-		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.spl", r.Name))
+		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.splunk.txt", r.Name))
 		c.writeContent(r.Search, filenamexml)
 		c.touchFile(filenamexml, r.Updated)
 
@@ -64,7 +64,7 @@ func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 		count = count + 1
 	}
 
-	log.Info(fmt.Sprintf("\n√ Wrote '%d' reports \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
+	log.Info(fmt.Sprintf("Wrote '%d' reports to folder '%s%c'", count, abs, os.PathSeparator))
 	config.CLI.Prompt(fmt.Sprintf("\n√ Wrote '%d' reports \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
 
 	log.Infof("Done. Wrote '%dkb' total of content. :-)", totalbytes)

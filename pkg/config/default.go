@@ -2,6 +2,8 @@ package config
 
 import (
 	"bufio"
+	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -78,7 +80,7 @@ func (c *Config) InputConfigFirstRun() {
 	password := string(bytePassword)
 	prompt(nl + nl)
 
-	defaultkey := time.Now().Format("20060102")
+	defaultkey := randomHex(16)[:16]
 	prompt("5) Enter a cryptokey for configuration [default:" + defaultkey + "]: " + nl)
 	prompt(`> `)
 	key, _ := reader.ReadString('\n')
@@ -103,6 +105,14 @@ func (c *Config) InputConfigFirstRun() {
 	c.CookiePort = strings.TrimSpace(cookiePort)
 
 	return
+}
+
+func randomHex(n int) string {
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		return ""
+	}
+	return hex.EncodeToString(bytes)
 }
 
 func (c *Config) writeFile(conffile string) {

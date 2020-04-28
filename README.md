@@ -1,6 +1,6 @@
 # **S**plunk **C**loud **KN**owledge **OB**ject **B**ackup
 
-'`scknobb`' is a tool to quickly snapshot your Splunk cloud dashboards, reports and search history to your local filesystem. This is useful when you don't have access to the backend filesystems or want to develop a workflow with version control.
+'`scknobb`' is a tool to quickly snapshot your Splunk cloud search history, dashboards and reports to your local filesystem. This is useful when you don't have access to the backend filesystems or want to develop a workflow with version control.
 
 Just run '`scknobb backup all`' and enjoy the benefits of your local copies, timestamped from their last updated values - ie. sort newest to oldest.
 
@@ -21,6 +21,8 @@ This is very proof-of-concept, but it's built using the best Go libraries money 
 
 The very first time you run the '`scknobb backup all`' the URL, username/password details that are prompted for are stored in the users '`$HOMEDIR`' in the '`.scknobb.v1.yaml`' configuration file encrypted using the crypto key that was prompted. It is not recommended to store that crypto key in the same '`.scknobb.v1.yaml`' file (unless you're aware of the implications) but instead pass the '`--key=XYZ`' parameter.
 
+**WARNING:** Running '`scknobb backup all`' will also backup your search history (aka. '`scknobb backup history`'). If you've done any sensitive searches during (e.g. during an incident investigation / HR review) those searches will be downloaded locallly to the folder you are in.
+
 **NOTE: This tool is written and maintained by @whereiskurt and is not officially supported or endorsed by Splunk in any way.**
 
 <img src="https://github.com/whereiskurt/splunkcloudknobb/blob/master/doc/images/kphgopher.png" width="250">
@@ -29,16 +31,16 @@ The very first time you run the '`scknobb backup all`' the URL, username/passwor
 
 This release has '`backup`' command with support for '`reports`' and '`dashboards`' (aka '`all`') subcommands.
 
-Use '`scknobb help backup`' to see more details.
+Use '`scknobb help backup`' to see more details or '`scknobb backup all`' to back to take a time snapshot.
 
 **Dedicated to: PTaddy, DeeMaCK, KMaze, sc0ttys1n, trizz13.**
 
-### Backup Dashboards to Local Filesystem
+### Backup All - Search History, Reports, and Dashboards to Local Filesystem
 
 ```shell
 
-## Run the scknobb binary to backup all dashboards
-$ scknobb backup dashboard --key=secret1234
+## Run the scknobb binary to backup all
+$ scknobb backup all --key=secret1234
 
 #              _                _     _
 #     ___  ___| | ___ __   ___ | |__ | |__

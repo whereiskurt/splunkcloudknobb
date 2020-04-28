@@ -6,13 +6,17 @@ COMMAND:
     backup
 
 SUBCOMMAND:
-    dashboard, reports
+    dashboard, report, history
 
 OPTIONS:
     --key=[string] 
 
 EXAMPLES:
-    $ scknobb 
+    $ scknobb all
+    
+    $ scknobb --key=secret1234 dashboard
+    $ scknobb --key=secret1234 report
+    $ scknobb --key=secret1234 history
 
 {{end}}
 

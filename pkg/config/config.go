@@ -19,7 +19,6 @@ import (
 
 // These defaults are needed to configure Viper/Cobra
 const defaultLogFolder = "log/"
-
 const defaultHomeFilename = ".scknobb.v1"
 
 // defaultConfigType the file extension for the configuration files (using YAML instead of XML)
@@ -40,9 +39,8 @@ type Config struct {
 	DTS            string
 	HomeFolder     string
 	HomeFilename   string
-	ConfigFolder   string
+	OutputFolder   string
 	ConfigFilename string
-	TemplateFolder string
 	LogFolder      string
 	VerboseLevel   string
 	VerboseLevel1  bool
@@ -56,7 +54,7 @@ type Config struct {
 func NewConfig() (c *Config) {
 	c = new(Config)
 	c.Log = log.New()
-	c.DTS = time.Now().Format("20060102")
+	c.DTS = time.Now().Format("20060102T150405")
 	c.Context = context.Background()
 	c.CLI = ui.NewCLI(c.Log)
 
@@ -69,7 +67,6 @@ func NewConfig() (c *Config) {
 		if err := c.readWithViper(); err != nil {
 			c.promptAndWriteDefault()
 		}
-
 	})
 
 	c.SetupDefaults()
@@ -79,8 +76,8 @@ func NewConfig() (c *Config) {
 
 // SetupDefaults hard defaults that aren't read from configruation folders
 func (c *Config) SetupDefaults() {
-	c.LogFolder = filepath.Join(defaultLogFolder)
-	os.MkdirAll(c.LogFolder, 0777)
+
+	c.LogFolder = defaultLogFolder
 
 	folder, err := home.Dir()
 	if err != nil {
@@ -89,6 +86,8 @@ func (c *Config) SetupDefaults() {
 		c.HomeFolder = folder
 	}
 	c.HomeFilename = defaultHomeFilename
+
+	c.OutputFolder = filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS))
 
 	c.SetDefaultLogFilename()
 	return
@@ -126,6 +125,7 @@ func (s *fatalStderrSplitter) Write(p []byte) (n int, err error) {
 
 // UnmarshalViper copies all of the cobra/viper config data into our Config struct
 // This is the delineation between cobra/viper and using our Config struct.
+// Called by app just any cobra command runs (ie. prerun)
 func (c *Config) UnmarshalViper() {
 
 	err := viper.MergeInConfig()

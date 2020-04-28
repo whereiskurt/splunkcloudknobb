@@ -36,12 +36,12 @@ func (c *Cmd) Dashboard(cmd *cobra.Command, args []string) {
 
 	config.CLI.Prompt("\n√ Fetched dashboard listing for ALL dashboards ... ")
 
-	folder := filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS), "dashboard")
+	folder := filepath.Join(c.Config.OutputFolder, "dashboard")
 	abs, _ := filepath.Abs(folder)
 	log.Infof("Creating backup dashboard folder named '%s%c'", abs, os.PathSeparator)
 	os.MkdirAll(abs, 0777)
 
-	rawfolder := filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS), "dashboard", "raw")
+	rawfolder := filepath.Join(c.Config.OutputFolder, "dashboard", "raw")
 	rawabs, _ := filepath.Abs(rawfolder)
 	log.Infof("Creating backup dashboard folder named '%s%c'", rawabs, os.PathSeparator)
 	os.MkdirAll(rawabs, 0777)
@@ -66,7 +66,7 @@ func (c *Cmd) Dashboard(cmd *cobra.Command, args []string) {
 		count = count + 1
 	}
 
-	log.Info(fmt.Sprintf("\n√ Wrote '%d' dashboards \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
+	log.Info(fmt.Sprintf("Wrote '%d' dashboards to folder '%s%c'", count, abs, os.PathSeparator))
 	config.CLI.Prompt(fmt.Sprintf("\n√ Wrote '%d' dashboards \n√ Writing files to folder '%s%c'\n", count, abs, os.PathSeparator))
 
 	log.Infof("Done. Wrote '%dkb' total of content. :-)", totalbytes)
