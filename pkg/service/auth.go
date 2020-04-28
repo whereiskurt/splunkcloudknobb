@@ -107,7 +107,7 @@ func Login(u string, username string, password string, cookiePort string, log *l
 }
 
 func step1(u string) (string, string, error) {
-	var url = u + "account/login?return_to=%2Fen-US%2F"
+	var url = u + "account/login?return_to=%2Fen-US%2F&loginType=splunk"
 
 	client, req, err := authGetRequest(url)
 	if err != nil {
