@@ -1,0 +1,3 @@
+{{ define "searchJob" -}}
+| history | search NOT search="| history*" AND NOT search="*metadata*" AND NOT search="*loadjob*" AND NOT savedsearch_name="*" AND NOT search="search" AND NOT search="*from sid*" AND NOT search="| eventcount summarize=false index=* index=_**" AND NOT provenance="UI:LocateData" AND NOT provenance="UI:TableEditor" AND NOT provenance="UI:DataModel" AND NOT provenance="UI:Pivot" AND NOT provenance="UI:Dataset" | dedup search | head 100000`
+{{- end }}

@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"runtime"
 	"time"
 
 	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
+	"github.com/shurcooL/vfsgen"
 )
 
 //TODO: Completely redo this Mage file :-) Proper Go constructs
@@ -23,18 +25,18 @@ var (
 	GIT_HASH = hash()
 	TAGS     = "release"
 	SRC      = "cmd/scknobb.go"
-	LDFLAGS  = fmt.Sprintf(`-X "github.com/whereiskurt/cloudcrawler/internal/app.ReleaseVersion=%s" -X "github.com/whereiskurt/cloudcrawler/internal/app.GitHash=%s" -X "github.com/whereiskurt/cloudcrawler/internal/app.ReleaseDate=%s"`, VERSION, GIT_HASH, time.Now().Format(time.RFC3339))
+	LDFLAGS  = fmt.Sprintf(`-X "github.com/whereiskurt/splunkcloudknobb/internal/app.ReleaseVersion=%s" -X "github.com/whereiskurt/splunkcloudknobb/internal/app.GitHash=%s" -X "github.com/whereiskurt/splunkcloudknobb/internal/app.ReleaseDate=%s"`, VERSION, GIT_HASH, time.Now().Format(time.RFC3339))
 )
 
 // Outputs binaries for Windows and Linux into 'release/' folder
 func Release() error {
+	mg.Deps(Clean)
+	mg.Deps(Generate)
 	mg.Deps(Test)
-	mg.Deps(goGenerate)
 	mg.Deps(goModule)
 	mg.Deps(Build)
 	mg.Deps(Binaries)
 
-	//return sh.Run("git", "gc")
 	return nil
 }
 
@@ -51,7 +53,7 @@ func Build() error {
 		return err
 	}
 
-	mg.Deps(goGenerate)
+	mg.Deps(Generate)
 
 	ext := ""
 	if GOOS == "windows" {
@@ -64,7 +66,8 @@ func Build() error {
 // Remove vfs_generated files and "log" folder
 func Clean() error {
 	//NOTE: File will grow and grow otherwise, because it includes itself during generation.
-	os.Remove("internal/app/cmd/vfs_generated.go")
+	os.Remove("internal/app/vfs.go")
+	os.Remove("pkg/vfs.go")
 	os.Remove("go.sum")
 	os.RemoveAll("log/")
 	return nil
@@ -80,16 +83,6 @@ func Sanity() error {
 	//sh.RunV("git", "gc")
 
 	return nil
-}
-
-// Run go generate and output code generated files
-func goGenerate() error {
-	mg.Deps(Clean)
-	//NOTE: File will grow and grow otherwise, because it includes itself during generation.
-	os.Remove("internal/app/cmd/vfs_generated.go")
-
-	err := sh.Run("go", "generate", "-tags", TAGS, "./...")
-	return err
 }
 
 // Runs go mod download/vendor
@@ -143,4 +136,34 @@ func hash() string {
 	log.SetOutput(w)
 
 	return hash[:8]
+}
+
+func Generate() (err error) {
+	mg.Deps(Clean)
+
+	//NOTE: File will grow and grow otherwise, because it includes itself during generation.
+	os.Remove("internal/app/cmd/vfs.go")
+	os.Remove("pkg/vfs.go")
+
+	err = vfsgen.Generate(http.Dir("internal/app/cmd/"), vfsgen.Options{
+		Filename:     "internal/app/cmd/vfs.go",
+		PackageName:  "cmd",
+		BuildTags:    "release",
+		VariableName: "CmdHelpEmbed",
+	})
+	if err != nil {
+		return err
+	}
+
+	err = vfsgen.Generate(http.Dir("pkg/"), vfsgen.Options{
+		Filename:     "pkg/vfs.go",
+		PackageName:  "pkg",
+		BuildTags:    "release",
+		VariableName: "PackageEmbed",
+	})
+	if err != nil {
+		return err
+	}
+
+	return err
 }

@@ -3,8 +3,8 @@ package app
 import (
 	"strings"
 
-	"github.com/whereiskurt/cloudcrawler/internal/app/cmd/backup"
-	"github.com/whereiskurt/cloudcrawler/pkg/config"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/backup"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/config"
 
 	"fmt"
 	"os"
@@ -83,8 +83,8 @@ func NewApp(config *config.Config) (a *App) {
 func (a *App) InvokeCLI() {
 
 	if len(os.Args) == 1 || strings.ToLower(os.Args[1]) == "--help" || strings.ToLower(os.Args[1]) == "-h" {
-		a.Config.CLI.Stderr("AppUsage", nil)
-		a.Config.CLI.Stderr("AppUsageExample", nil)
+		a.Config.CLI.StderrHelpTemplate("AppUsage", nil)
+		a.Config.CLI.StderrHelpTemplate("AppUsageExample", nil)
 	} else {
 		os.MkdirAll(a.Config.LogFolder, 0777)
 		// os.MkdirAll(a.Config.OutputFolder, 0777)
@@ -99,14 +99,14 @@ func (a *App) InvokeCLI() {
 // AppUsageHeader asdf
 func (a *App) AppUsageHeader() string {
 	versionMap := map[string]string{"ReleaseDate": ReleaseDate[:10], "ReleaseVersion": ReleaseVersion, "GitHash": GitHash}
-	a.Config.CLI.Stderr("AppHeader", versionMap)
+	a.Config.CLI.StderrHelpTemplate("AppHeader", versionMap)
 	return "\x00"
 }
 
 // AppHelp renders help for the Help command
 func (a *App) AppHelp(cmd *cobra.Command, args []string) {
-	a.Config.CLI.Stderr("AppUsage", nil)
-	a.Config.CLI.Stderr("AppUsageExample", nil)
+	a.Config.CLI.StderrHelpTemplate("AppUsage", nil)
+	a.Config.CLI.StderrHelpTemplate("AppUsageExample", nil)
 }
 
 func contains(a []string, x string) bool {

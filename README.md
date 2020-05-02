@@ -29,7 +29,7 @@ The very first time you run the '`scknobb backup all`' the URL, username/passwor
 
 ## Release Notes (v0.0.1):
 
-This release has '`backup`' command with support for '`reports`' and '`dashboards`' (aka '`all`') subcommands.
+This release has '`backup`' command with support for '`reports`', '`dashboards`' and '`history`' (aka '`all`') subcommands.
 
 Use '`scknobb help backup`' to see more details or '`scknobb backup all`' to back to take a time snapshot.
 

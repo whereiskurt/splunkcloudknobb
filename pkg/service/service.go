@@ -29,6 +29,7 @@ func NewService(log *log.Logger) (s *Service) {
 		IdleConnTimeout:     10 * time.Second,
 		TLSHandshakeTimeout: 10 * time.Second,
 	}
+
 	return
 }
 

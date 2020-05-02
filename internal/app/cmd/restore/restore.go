@@ -1,6 +1,6 @@
 package restore
 
-import "github.com/whereiskurt/cloudcrawler/pkg/config"
+import "github.com/whereiskurt/splunkcloudknobb/pkg/config"
 
 //Cmd describes the command
 type Cmd struct {

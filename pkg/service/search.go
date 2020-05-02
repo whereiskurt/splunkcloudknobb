@@ -163,7 +163,7 @@ CHECK:
 			return err
 		}
 
-		status, err := searchStatus(&body)
+		status, err := translateSearchStatus(&body)
 		if err != nil {
 			return err
 		}
@@ -189,7 +189,7 @@ CHECK:
 	return reterr
 }
 
-func searchStatus(body *[]byte) (status string, err error) {
+func translateSearchStatus(body *[]byte) (status string, err error) {
 	var src SplunkSearchStatusUIView
 	err = json.Unmarshal(*body, &src)
 	if err != nil {

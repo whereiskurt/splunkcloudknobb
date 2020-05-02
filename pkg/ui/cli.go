@@ -3,7 +3,7 @@ package ui
 import (
 	"bytes"
 
-	"github.com/whereiskurt/cloudcrawler/internal/app/cmd"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd"
 
 	"crypto/sha1"
 	"encoding/base64"
@@ -34,9 +34,9 @@ func NewCLI(log *log.Logger) *CLI {
 	return cli
 }
 
-// Stderr renders at template name to STDERR
-func (cli *CLI) Stderr(name string, data interface{}) {
-	fmt.Fprintf(os.Stderr, cli.render(name, data))
+// StderrHelpTemplate renders at template name to STDERR
+func (cli *CLI) StderrHelpTemplate(name string, data interface{}) {
+	fmt.Fprintf(os.Stderr, cli.renderHelp(name, data))
 }
 
 // Prompt prints to STDERR
@@ -46,7 +46,7 @@ func (cli *CLI) Prompt(line string) {
 }
 
 // Render will output the UI templates as per the config bind the data.
-func (cli *CLI) render(name string, data interface{}) (usage string) {
+func (cli *CLI) renderHelp(name string, data interface{}) (usage string) {
 
 	t := template.New("")
 	for i := range cli.HelpTemplates {

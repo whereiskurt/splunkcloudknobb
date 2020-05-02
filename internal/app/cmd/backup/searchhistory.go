@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
-	"github.com/whereiskurt/cloudcrawler/pkg/service"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/service"
 )
 
 // SearchHistory will pull back

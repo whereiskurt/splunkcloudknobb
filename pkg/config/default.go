@@ -20,7 +20,7 @@ func (c *Config) promptAndWriteDefault() {
 	conffile := filepath.Join(c.HomeFolder, c.HomeFilename)
 	conffile = conffile + "." + defaultConfigType
 
-	c.CLI.Stderr("PromptNewConnfiguration", map[string]string{"Filename": conffile})
+	c.CLI.StderrHelpTemplate("PromptNewConnfiguration", map[string]string{"Filename": conffile})
 
 	// First run, try and get user inputted configuration
 	if terminal.IsTerminal(int(os.Stdin.Fd())) {
@@ -42,6 +42,8 @@ func (c *Config) promptAndWriteDefault() {
 func (c *Config) shouldSaveKey(savekey string) bool {
 	return strings.Contains(strings.ToLower(savekey), "y")
 }
+
+// TODO: Rewrite the whole InputConfigFirstRun - after it reads url/user/pass/cookieport it should try and validate. Have bold and echo * on passwd.
 
 // InputConfigFirstRun reads STDIN for the default values, and stores in Config c.
 func (c *Config) InputConfigFirstRun() {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/whereiskurt/cloudcrawler/internal/app"
-	"github.com/whereiskurt/cloudcrawler/pkg/config"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/config"
 )
 
 func main() {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/whereiskurt/cloudcrawler/pkg/service"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/service"
 
 	"github.com/spf13/cobra"
 )

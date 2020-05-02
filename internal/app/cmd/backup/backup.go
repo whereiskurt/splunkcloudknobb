@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/whereiskurt/cloudcrawler/pkg/config"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/config"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ func NewBackup(cfg *config.Config) (c *Cmd) {
 
 // HelpHandler all of the knowledge objects (ie.  dashboards, reports, lookup files, ..)
 func (c *Cmd) HelpHandler(cmd *cobra.Command, args []string) {
-	c.Config.CLI.Stderr("UsageBackup", nil)
+	c.Config.CLI.StderrHelpTemplate("UsageBackup", nil)
 }
 
 // All all of the knowledge objects (ie.  dashboards, reports, lookup files, ..)

@@ -14,7 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/whereiskurt/cloudcrawler/pkg/ui"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/ui"
 )
 
 // These defaults are needed to configure Viper/Cobra

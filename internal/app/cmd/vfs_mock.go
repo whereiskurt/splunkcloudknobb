@@ -21,4 +21,6 @@ func init() {
 	_, filename, _, _ := runtime.Caller(0)
 
 	CmdHelpEmbed = http.Dir(path.Join(path.Dir(filename), "..", "..", "app", "cmd"))
+
+	return
 }
