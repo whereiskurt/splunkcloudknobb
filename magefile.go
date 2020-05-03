@@ -70,6 +70,7 @@ func Clean() error {
 	os.Remove("pkg/vfs.go")
 	os.Remove("go.sum")
 	os.RemoveAll("log/")
+	os.RemoveAll("release/")
 	return nil
 }
 
@@ -101,6 +102,7 @@ func goModule() error {
 
 // Outputs various GOOS/GOARCH combos for Windows/Linux
 func Binaries() error {
+	mg.Deps(Clean)
 	mg.Deps(binaryLinuxAmd64, binaryWindows386, binaryWindowAmd64, binaryDarwinAmd64)
 	return nil
 }

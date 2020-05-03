@@ -1,0 +1,37 @@
+{{ define "searchHistoryURL" -}}
+splunkd/__raw/servicesNS/{{.Username}}/search/search/jobs
+{{- end }}
+
+{{ define "searchHistoryBody" -}}
+rf=*&auto_cancel=30&status_buckets=300&output_mode=json&search={{.SearchParam}}&earliest_time=0&preview=false&provenance=UI:Search
+{{- end }}
+
+{{ define "searchHistorySearchParam" -}}
+| history 
+| search NOT search="| history*" 
+    AND NOT search="*metadata*" 
+    AND NOT search="*loadjob*" 
+    AND NOT savedsearch_name="*" 
+    AND NOT search="search" 
+    AND NOT search="*from sid*" 
+    AND NOT search="| eventcount summarize=false index=* index=_**" 
+    AND NOT provenance="UI:LocateData" 
+    AND NOT provenance="UI:TableEditor" 
+    AND NOT provenance="UI:DataModel" 
+    AND NOT provenance="UI:Pivot" 
+    AND NOT provenance="UI:Dataset" | dedup search | head 100000
+{{- end }}
+
+
+{{ define "searchJobStatusURL" -}}
+splunkd/__raw/servicesNS/{{.Username}}/search/search/jobs/{{.JobSID}}?output_mode=json
+{{- end }}
+
+
+{{ define "searchHistoryResultsURL" -}} 
+splunkd/__raw/servicesNS/nobody/search/search/jobs/{{.JobSID}}/results?output_mode=json&offset={{.Offset}}&count={{.Count}}&search={{.SearchParam}}
+{{- end }}
+
+{{ define "searchHistoryResultsSearchParam" -}} 
+| search
+{{- end }}

@@ -10,16 +10,16 @@ import (
 	"runtime"
 )
 
-// TemplateEmbed implements the http filesystem, but is overridden when we
+// PackageEmbed implements the http filesystem, but is overridden when we
 // build with tags (go build -tags release) this file won't be built, but
 // templates_generate.go will be.
-var TemplateEmbed http.FileSystem
+var PackageEmbed http.FileSystem
 
 func init() {
 	// This needs to be set to an absolute folder path, so we derive it. :-)
 	_, filename, _, _ := runtime.Caller(0)
 
-	TemplateEmbed = http.Dir(path.Join(path.Dir(filename)))
+	PackageEmbed = http.Dir(path.Join(path.Dir(filename)))
 
 	return
 }

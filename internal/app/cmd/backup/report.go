@@ -25,7 +25,7 @@ func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 	log.Infof("Successful login to instance:\n  %s", auth.URL)
 	config.CLI.Prompt(fmt.Sprintf("√ Successful login with '%s' to instance:\n    %s", auth.Username, auth.URL) + "\n")
 
-	chanr := make(chan service.Report)
+	chanr := make(chan interface{})
 	go func() {
 		log.Infof("Retrieving Reports Listing for ALL reports ... ")
 		err := s.ListReport(auth, chanr)
@@ -49,7 +49,8 @@ func (c *Cmd) Report(cmd *cobra.Command, args []string) {
 
 	var totalbytes = 0
 	var count = 0
-	for r := range chanr {
+	for rec := range chanr {
+		r := rec.(service.Report)
 		config.CLI.Prompt(".")
 
 		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.splunk.txt", r.Name))

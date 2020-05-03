@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	urls "net/url"
 
 	"github.com/pkg/errors"
 )
@@ -32,7 +31,7 @@ func (s *Service) ListDashboard(auth AuthCookies, chand chan Dashboard) (err err
 PAGING:
 	for {
 		u := auth.URL + `splunkd/__raw/servicesNS/-/search/data/ui/views?`
-		url := u + urls.PathEscape(fmt.Sprintf(query, auth.Username, size, offset))
+		url := u + fmt.Sprintf(query, auth.Username, size, offset)
 
 		client, req, err := s.authGetRequest(url)
 		if err != nil {

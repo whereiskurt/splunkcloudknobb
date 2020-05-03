@@ -1,0 +1,3 @@
+{{ define "reportResultsURL" -}}
+splunkd/__raw/servicesNS/-/search/saved/searches?output_mode=json&sort_dir=asc&sort_key=name&sort_mode=natural&sort_mode=natural&search=NOT ((is_scheduled=1 AND (alert_type!=always OR alert.track=1 OR (dispatch.earliest_time="rt*" AND dispatch.latest_time="rt*" AND actions="*" AND actions!="")))) AND (eai:acl.owner="{{.Username}}") AND ((eai:acl.sharing="user" AND eai:acl.owner="{{.Username}}") OR (eai:acl.sharing!="user")) AND is_visible=1&count={{.Count}}&offset={{.Offset}}
+{{- end}}

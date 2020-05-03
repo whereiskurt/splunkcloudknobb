@@ -26,7 +26,7 @@ func (c *Cmd) SearchHistory(cmd *cobra.Command, args []string) {
 	log.Infof("Successful login to instance:\n  %s", auth.URL)
 	config.CLI.Prompt(fmt.Sprintf("√ Successful login with '%s' to instance:\n    %s", auth.Username, auth.URL) + "\n")
 
-	chanr := make(chan service.SearchHistoryResult)
+	chanr := make(chan interface{})
 	go func() {
 		log.Infof("Retrieving Search History for ALL searches ... ")
 		err := s.ListSearchHistory(auth, chanr)
@@ -51,18 +51,21 @@ func (c *Cmd) SearchHistory(cmd *cobra.Command, args []string) {
 	var totalbytes = 0
 	var count = 0
 	for r := range chanr {
+		//Type asseertation, because we use Generic interface{} for our channel.
+		rec := r.(service.SearchHistoryResult)
+
 		config.CLI.Prompt(".")
 
-		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.splunk.txt", r.SearchID))
-		c.writeContent(r.Search, filenamexml)
-		c.touchFile(filenamexml, r.Time)
+		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.splunk.txt", rec.SearchID))
+		c.writeContent(rec.Search, filenamexml)
+		c.touchFile(filenamexml, rec.Time)
 
-		filenamejson := filepath.Join(folder, "raw", fmt.Sprintf("%s.json", r.SearchID))
-		c.writeContent(r.RawEntry, filenamejson)
-		c.touchFile(filenamejson, r.Time)
+		filenamejson := filepath.Join(folder, "raw", fmt.Sprintf("%s.json", rec.SearchID))
+		c.writeContent(rec.RawEntry, filenamejson)
+		c.touchFile(filenamejson, rec.Time)
 
-		totalbytes = totalbytes + len(r.RawEntry)/1024
-		log.Debugf("%s, %dkb, %s, %s", filenamexml, len(r.RawEntry)/1024, auth.Username, r.SearchID)
+		totalbytes = totalbytes + len(rec.RawEntry)/1024
+		log.Debugf("%s, %dkb, %s, %s", filenamexml, len(rec.RawEntry)/1024, auth.Username, rec.SearchID)
 		count = count + 1
 	}
 

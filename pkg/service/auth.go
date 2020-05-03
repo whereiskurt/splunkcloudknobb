@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	urls "net/url"
 	"strings"
 	"time"
 
@@ -103,11 +102,13 @@ func (s *Service) Login(u string, username string, password string, cookiePort s
 
 	log.Debugf("Success: AuthorizedToken: %s", authd)
 
+	s.SessionMap["Username"] = authd.Username
+
 	return authd, nil
 }
 
 func (s *Service) step1(u string) (string, string, error) {
-	var url = u + "account/login?return_to=%2Fen-US%2F"
+	var url = u + "account/login?return_to=/en-US/"
 
 	client, req, err := s.authGetRequest(url)
 	if err != nil {
@@ -204,9 +205,7 @@ func (s *Service) step3(u string, tsess string, cookiePort string) (string, erro
 func (s *Service) step4(u, cval, splunkuuid, sessionid, username, password, cookiePort string) (splunkd string, csrf string, expiry string, err error) {
 	var url = u + `account/login`
 
-	returnto := urls.PathEscape("/en-US/")
-	username = urls.PathEscape(username)
-	password = urls.PathEscape(password)
+	returnto := "/en-US/"
 
 	body := fmt.Sprintf("cval=%s&username=%s&password=%s&return_to=%s", cval, username, password, returnto)
 
