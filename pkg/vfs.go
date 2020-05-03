@@ -21,7 +21,7 @@ var PackageEmbed = func() http.FileSystem {
 	fs := vfsgen۰FS{
 		"/": &vfsgen۰DirInfo{
 			name:    "/",
-			modTime: time.Date(2020, 5, 3, 20, 7, 0, 730882744, time.UTC),
+			modTime: time.Date(2020, 5, 3, 20, 10, 19, 349515312, time.UTC),
 		},
 		"/config": &vfsgen۰DirInfo{
 			name:    "config",
