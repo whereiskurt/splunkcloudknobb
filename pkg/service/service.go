@@ -50,6 +50,7 @@ func NewService(log *log.Logger) (s *Service) {
 	return
 }
 
+// RenderTemplateOneLine renders tmplname and strips \n \r from
 func (s *Service) RenderTemplateOneLine(tmplname string) string {
 	rendered := s.TmplRender.RenderPackage(tmplname, s.SessionMap)
 	rendered = strings.ReplaceAll(rendered, "\n", "")

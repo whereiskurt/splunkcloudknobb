@@ -21,7 +21,7 @@ var CmdHelpEmbed = func() http.FileSystem {
 	fs := vfsgen۰FS{
 		"/": &vfsgen۰DirInfo{
 			name:    "/",
-			modTime: time.Date(2020, 5, 3, 20, 10, 19, 353515364, time.UTC),
+			modTime: time.Date(2020, 5, 3, 23, 48, 1, 463489657, time.UTC),
 		},
 		"/backup": &vfsgen۰DirInfo{
 			name:    "backup",
