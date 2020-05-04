@@ -6,7 +6,7 @@ splunkd/__raw/servicesNS/{{.Username}}/search/search/jobs
 rf=*&auto_cancel=30&status_buckets=300&output_mode=json&search={{.SearchParam}}&earliest_time=0&preview=false&provenance=UI:Search
 {{- end }}
 
-{{ define "searchHistorySearchParam" -}}
+{{ define "searchHistorySearchSPL" -}}
 | history 
 | search NOT search="| history*" 
     AND NOT search="*metadata*" 
@@ -29,9 +29,5 @@ splunkd/__raw/servicesNS/{{.Username}}/search/search/jobs/{{.JobSID}}?output_mod
 
 
 {{ define "searchHistoryResultsURL" -}} 
-splunkd/__raw/servicesNS/nobody/search/search/jobs/{{.JobSID}}/results?output_mode=json&offset={{.Offset}}&count={{.Count}}&search={{.SearchParam}}
-{{- end }}
-
-{{ define "searchHistoryResultsSearchParam" -}} 
-| search
+splunkd/__raw/servicesNS/nobody/search/search/jobs/{{.JobSID}}/results?output_mode=json&offset={{.Offset}}&count={{.Count}}&search=|search
 {{- end }}

@@ -1,0 +1,3 @@
+{{ define "dashboardResultsURL" -}}
+splunkd/__raw/servicesNS/-/search/data/ui/views?output_mode=json&search=((isDashboard=1 AND ((rootNode="dashboard" AND version=1) OR rootNode="form" OR rootNode="view" OR rootNode="html") AND isVisible=1) AND ((eai:acl.sharing="user" AND eai:acl.owner="{{.Username}}") OR (eai:acl.sharing!="user")))&sort_dir=asc&sort_key=label&sort_mode=alpha&sort_mode=alpha&count={{.Count}}&offset={{.Offset}}
+{{- end}}

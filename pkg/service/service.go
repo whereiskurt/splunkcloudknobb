@@ -38,9 +38,9 @@ func NewService(log *log.Logger) (s *Service) {
 	}
 	s.TmplRender = new(tmpl.UITemplate)
 
-	s.TmplRender.RegisterPackageFile("service/service.tmpl")
 	s.TmplRender.RegisterPackageFile("service/search.tmpl")
 	s.TmplRender.RegisterPackageFile("service/report.tmpl")
+	s.TmplRender.RegisterPackageFile("service/dashboard.tmpl")
 
 	s.SessionMap = make(map[string]string)
 
@@ -194,7 +194,6 @@ func (s *Service) submitSearchJob(auth AuthCookies, spl string) (sid string, err
 		return "", err
 	}
 
-	s.SessionMap["JobSID"] = jobSID
 	return jobSID, nil
 }
 func extractJobSID(body *[]byte) (sid string, err error) {
@@ -208,7 +207,7 @@ func extractJobSID(body *[]byte) (sid string, err error) {
 	return src.SID, nil
 }
 
-func (s *Service) waitForDone(auth AuthCookies, jobSID string) (reterr error) {
+func (s *Service) waitForStatusDone(auth AuthCookies) (reterr error) {
 
 	const maxloops = 15
 	var loopcount = 0
@@ -243,7 +242,7 @@ CHECK:
 			reterr = nil
 			break CHECK
 		case "FAILED":
-			reterr = fmt.Errorf("%s job %s failed with status %s", "searchJobStatusURL", jobSID, status)
+			reterr = fmt.Errorf("%s job %s failed with status %s", "searchJobStatusURL", s.SessionMap["JobID"], status)
 			break CHECK
 		default:
 			loopcount = loopcount + 1

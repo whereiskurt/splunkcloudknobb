@@ -21,19 +21,17 @@ func (s *Service) ListSearchHistory(auth AuthCookies, chansh chan interface{}) e
 
 	defer close(chansh)
 
-	spl := s.RenderTemplateOneLine("searchHistorySearchParam")
+	spl := s.RenderTemplateOneLine("searchHistorySearchSPL")
 	jobSID, err := s.submitSearchJob(auth, spl)
 	if err != nil {
 		return err
 	}
+	s.SessionMap["JobSID"] = jobSID
 
-	err = s.waitForDone(auth, jobSID)
+	err = s.waitForStatusDone(auth)
 	if err != nil {
 		return err
 	}
-
-	param := s.RenderTemplateOneLine("searchHistoryResultsSearchParam")
-	s.SessionMap["SearchParam"] = param
 
 	err = s.ConsumePagedResults(auth, chansh, translateSearchHistory, auth.URL, "searchHistoryResultsURL")
 
