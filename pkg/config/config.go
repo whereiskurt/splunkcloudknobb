@@ -130,7 +130,6 @@ func (c *Config) UnmarshalViper() {
 
 	err := viper.MergeInConfig()
 	if err != nil {
-		c.Log.Warnf("No configuration found: %s", err)
 		return
 	}
 

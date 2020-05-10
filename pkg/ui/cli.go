@@ -27,6 +27,8 @@ func NewCLI(log *log.Logger) *CLI {
 	cli.Template.AddHelp("scknobb.tmpl")
 	cli.Template.AddHelp("backup/backup.tmpl")
 	cli.Template.AddHelp("restore/restore.tmpl")
+	cli.Template.AddHelp("remove/remove.tmpl")
+	cli.Template.AddHelp("list/list.tmpl")
 
 	return cli
 }

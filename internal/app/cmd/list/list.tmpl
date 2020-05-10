@@ -1,0 +1,19 @@
+
+{{ define "UsageList" }}
+
+{{- template "AppUsage" }}
+COMMAND:
+    list
+
+SUBCOMMAND:
+    lookupfile
+
+OPTIONS:
+    --key=[string] 
+    
+
+EXAMPLES:
+    $ scknobb list lookupfile --key=ABCD
+
+{{end}}
+

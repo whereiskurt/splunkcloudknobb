@@ -5,6 +5,7 @@ import (
 
 	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/backup"
 	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/list"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/remove"
 	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/restore"
 	"github.com/whereiskurt/splunkcloudknobb/pkg/config"
 
@@ -68,23 +69,29 @@ func NewApp(config *config.Config) (a *App) {
 
 	helpCmd := command("help", a.AppHelp, a.RootCmd)
 
-	b := backup.NewBackup(a.Config)
-	bCmd := command("backup", b.HelpHandler, a.RootCmd)
-	_ = command("backup", b.HelpHandler, helpCmd)
-	_ = command("all", b.All, bCmd)
-	_ = command("dashboard", b.Dashboard, bCmd)
-	_ = command("report", b.Report, bCmd)
-	_ = command("history", b.SearchHistory, bCmd)
+	back := backup.NewBackup(a.Config)
+	bCmd := command("backup", back.HelpHandler, a.RootCmd)
+	_ = command("backup", back.HelpHandler, helpCmd)
+	_ = command("all", back.All, bCmd)
+	_ = command("dashboard", back.Dashboard, bCmd)
+	_ = command("report", back.Report, bCmd)
+	_ = command("history", back.SearchHistory, bCmd)
 
-	r := restore.NewRestore(a.Config)
-	rCmd := command("restore", r.HelpHandler, a.RootCmd)
-	_ = command("restore", r.HelpHandler, helpCmd)
-	_ = command("lookup", r.RestoreLookupFileHandler, rCmd)
+	res := restore.NewRestore(a.Config)
+	resCmd := command("restore", res.HelpHandler, a.RootCmd)
+	_ = command("restore", res.HelpHandler, helpCmd)
+	_ = command("lookup", res.RestoreLookupFileHandler, resCmd)
 
 	l := list.NewList(a.Config)
 	lCmd := command("list", l.HelpHandler, a.RootCmd)
 	_ = command("list", l.HelpHandler, helpCmd)
 	_ = command("lookup", l.ListLookupFileHandler, lCmd)
+
+	rem := remove.NewRemove(a.Config)
+	remCmd := command("remove", rem.HelpHandler, a.RootCmd)
+	_ = command("remove", rem.HelpHandler, helpCmd)
+	_ = command("lookup", rem.RemoveLookupFileHandler, remCmd)
+
 	return a
 }
 

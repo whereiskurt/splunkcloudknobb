@@ -23,5 +23,5 @@ func NewList(cfg *config.Config) (c *Cmd) {
 
 // HelpHandler all of the knowledge objects (ie.  dashboards, reports, lookup files, ..)
 func (c *Cmd) HelpHandler(cmd *cobra.Command, args []string) {
-	c.Config.CLI.StderrHelpTemplate("UsageRestore", nil)
+	c.Config.CLI.StderrHelpTemplate("UsageList", nil)
 }

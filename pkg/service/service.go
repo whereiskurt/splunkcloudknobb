@@ -146,8 +146,7 @@ func (s *Service) retryRequest(label string, client *http.Client, req *http.Requ
 		}
 		defer resp.Body.Close()
 
-		//TODO: Make this WAY WAY more robust.
-		if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusSeeOther) {
+		if !(resp.StatusCode >= 200 && resp.StatusCode < 400) {
 			err2 := fmt.Errorf("failed to get %s: http_resp: %d", label, resp.StatusCode)
 			return s.sleepBeforeRetry(attempt), err2
 		}

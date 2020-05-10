@@ -1,0 +1,18 @@
+{{ define "UsageRemove" }}
+
+{{- template "AppUsage" }}
+COMMAND:
+    remove
+
+SUBCOMMAND:
+    lookupfile
+
+OPTIONS:
+    --key=[string] 
+    --name=Remote_Lookup_Filename.csv
+
+EXAMPLES:
+    $ scknobb remove lookupfile --name Remote_Lookup_Filename.csv 
+
+{{end}}
+
