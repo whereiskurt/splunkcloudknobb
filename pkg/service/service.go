@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/whereiskurt/splunkcloudknobb/pkg/tmpl"
+	"github.com/whereiskurt/splunkcloudknobb/pkg/ui"
 
 	"net/http"
 	"net/http/cookiejar"
@@ -22,7 +22,7 @@ import (
 type Service struct {
 	Log             *log.Logger
 	Transport       *http.Transport
-	TmplRender      *tmpl.UITemplate
+	AppTemplate     *ui.AppTemplate
 	SessionMap      map[string]string
 	ResultCountSize int
 }
@@ -36,15 +36,17 @@ func NewService(log *log.Logger) (s *Service) {
 		IdleConnTimeout:     10 * time.Second,
 		TLSHandshakeTimeout: 10 * time.Second,
 	}
-	s.TmplRender = new(tmpl.UITemplate)
+	s.AppTemplate = new(ui.AppTemplate)
+	s.AppTemplate.Log = log
 
-	s.TmplRender.RegisterPackageFile("service/search.tmpl")
-	s.TmplRender.RegisterPackageFile("service/report.tmpl")
-	s.TmplRender.RegisterPackageFile("service/dashboard.tmpl")
+	s.AppTemplate.AddPackage("service/search.tmpl")
+	s.AppTemplate.AddPackage("service/report.tmpl")
+	s.AppTemplate.AddPackage("service/dashboard.tmpl")
+	s.AppTemplate.AddPackage("service/lookupfiles.tmpl")
 
 	s.SessionMap = make(map[string]string)
 
-	s.ResultCountSize = 100
+	s.ResultCountSize = 250
 	s.SessionMap["Count"] = fmt.Sprintf("%d", s.ResultCountSize)
 
 	return
@@ -52,7 +54,7 @@ func NewService(log *log.Logger) (s *Service) {
 
 // RenderTemplateOneLine renders tmplname and strips \n \r from
 func (s *Service) RenderTemplateOneLine(tmplname string) string {
-	rendered := s.TmplRender.RenderPackage(tmplname, s.SessionMap)
+	rendered := s.AppTemplate.RenderPackage(tmplname, s.SessionMap)
 	rendered = strings.ReplaceAll(rendered, "\n", "")
 	rendered = strings.ReplaceAll(rendered, "\r", "")
 	return rendered
@@ -83,9 +85,7 @@ func pathEscape(fullurl string) string {
 
 func (s *Service) authGetRequest(url string) (client *http.Client, req *http.Request, err error) {
 
-	s.Log.Errorf("Before Escaped:%s", url)
 	url = pathEscape(url)
-	s.Log.Errorf("After Escaped:%s", url)
 
 	client = &http.Client{
 		Transport: s.Transport,
@@ -147,7 +147,7 @@ func (s *Service) retryRequest(label string, client *http.Client, req *http.Requ
 		defer resp.Body.Close()
 
 		//TODO: Make this WAY WAY more robust.
-		if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated) {
+		if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusSeeOther) {
 			err2 := fmt.Errorf("failed to get %s: http_resp: %d", label, resp.StatusCode)
 			return s.sleepBeforeRetry(attempt), err2
 		}
@@ -174,7 +174,7 @@ func (s *Service) submitSearchJob(auth AuthCookies, spl string) (sid string, err
 	searchHistoryURL := s.RenderTemplateOneLine("searchHistoryURL")
 	jobURL := auth.URL + searchHistoryURL
 
-	searchBody := s.RenderTemplateOneLine("searchHistoryBody")
+	searchBody := s.RenderTemplateOneLine("searchHistoryPostBody")
 
 	client, req, err := s.authPostRequest(jobURL, strings.NewReader(searchBody))
 	if err != nil {

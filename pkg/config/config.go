@@ -89,7 +89,7 @@ func (c *Config) SetupDefaults() {
 
 	c.OutputFolder = filepath.Join(fmt.Sprintf("%s.scknobb", c.DTS))
 
-	c.SetDefaultLogFilename()
+	//c.SetDefaultLogFilename()
 	return
 }
 

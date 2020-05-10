@@ -1,0 +1,19 @@
+
+{{ define "UsageBackup" }}
+
+{{- template "AppUsage" }}
+COMMAND:
+    restore
+
+SUBCOMMAND:
+    lookupfile
+
+OPTIONS:
+    --key=[string] 
+    --sharing=[global|private|app]
+
+EXAMPLES:
+    $ scknobb restore lookupfile /tmp/somecsv123.csv --sharing global 
+
+{{end}}
+

@@ -67,7 +67,6 @@ func (s *Service) Login(u string, username string, password string, cookiePort s
 	// splunkuuid == experience_id also
 	cval, splunkuuid, err := s.step1(u)
 	if err != nil || cval == "" || splunkuuid == "" {
-		//log.Error("error: %v, cval: %s, splunk_uuid: %s\n", err, cval, splunkuuid)
 		err = fmt.Errorf("failed Authentication Step 1: invalid url, username, or password: values ('%s', '%s')", u, username)
 		return AuthCookies{}, err
 	}
@@ -103,7 +102,7 @@ func (s *Service) Login(u string, username string, password string, cookiePort s
 	log.Debugf("Success: AuthorizedToken: %s", authd)
 
 	s.SessionMap["Username"] = authd.Username
-
+	s.SessionMap["SplunkWebCSRF"] = authd.SplunkWebCSRF
 	return authd, nil
 }
 

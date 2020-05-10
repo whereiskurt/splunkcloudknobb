@@ -4,6 +4,8 @@ import (
 	"strings"
 
 	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/backup"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/list"
+	"github.com/whereiskurt/splunkcloudknobb/internal/app/cmd/restore"
 	"github.com/whereiskurt/splunkcloudknobb/pkg/config"
 
 	"fmt"
@@ -69,13 +71,20 @@ func NewApp(config *config.Config) (a *App) {
 	b := backup.NewBackup(a.Config)
 	bCmd := command("backup", b.HelpHandler, a.RootCmd)
 	_ = command("backup", b.HelpHandler, helpCmd)
-
 	_ = command("all", b.All, bCmd)
-
 	_ = command("dashboard", b.Dashboard, bCmd)
 	_ = command("report", b.Report, bCmd)
 	_ = command("history", b.SearchHistory, bCmd)
 
+	r := restore.NewRestore(a.Config)
+	rCmd := command("restore", r.HelpHandler, a.RootCmd)
+	_ = command("restore", r.HelpHandler, helpCmd)
+	_ = command("lookup", r.RestoreLookupFileHandler, rCmd)
+
+	l := list.NewList(a.Config)
+	lCmd := command("list", l.HelpHandler, a.RootCmd)
+	_ = command("list", l.HelpHandler, helpCmd)
+	_ = command("lookup", l.ListLookupFileHandler, lCmd)
 	return a
 }
 

@@ -3,6 +3,7 @@ module github.com/whereiskurt/splunkcloudknobb
 go 1.13
 
 require (
+	github.com/PuerkitoBio/goquery v1.5.1
 	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 // indirect
 	github.com/davecgh/go-spew v1.1.1
 	github.com/magefile/mage v1.9.0

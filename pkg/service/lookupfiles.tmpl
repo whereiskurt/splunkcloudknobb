@@ -1,0 +1,20 @@
+{{ define "lookfilesResultsURL" -}}
+manager/search/data/lookup-table-files?ns=-&pwnr=-&search=&count={{.Count}}&offset={{.Offset}}
+{{- end}}
+
+{{ define "lookupFileCSVRow" -}}
+"{{.App}}", "{{.Filename}}", "{{.Owner}}", "{{.Sharing}}", "{{.Path}}"
+{{- end }}
+
+{{ define "lookupFileCSVHeader" -}}
+Application, Filename, Owner, Sharing, FullPath
+{{- end }}
+
+
+{{ define "lookupFileRemoveURL" -}}
+manager/search/data/lookup-table-files/multidelete
+{{ end }}
+
+{{ define "lookupFileRemovePostBody" -}}
+splunk_form_key={{.SplunkWebCSRF}}&ctrl=remove&ctrl_link=/servicesNS/nobody/search/data/lookup-table-files/{{.Filename}}&ctrl_name={{.Filename}}'
+{{- end }}

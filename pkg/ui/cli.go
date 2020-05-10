@@ -1,8 +1,6 @@
 package ui
 
 import (
-	"github.com/whereiskurt/splunkcloudknobb/pkg/tmpl"
-
 	"fmt"
 	"os"
 
@@ -13,7 +11,7 @@ import (
 type CLI struct {
 	// Config        *config.Config
 	HelpTemplates []string
-	Template      *tmpl.UITemplate
+	Template      *AppTemplate
 	Log           *log.Logger
 }
 
@@ -23,10 +21,12 @@ func NewCLI(log *log.Logger) *CLI {
 	var cli = new(CLI)
 	cli.Log = log
 
-	cli.Template = tmpl.NewTemplate()
+	cli.Template = NewTemplate()
+	cli.Template.Log = log
 
-	cli.Template.RegisterHelpFile("scknobb.tmpl")
-	cli.Template.RegisterHelpFile("backup/backup.tmpl")
+	cli.Template.AddHelp("scknobb.tmpl")
+	cli.Template.AddHelp("backup/backup.tmpl")
+	cli.Template.AddHelp("restore/restore.tmpl")
 
 	return cli
 }
@@ -38,6 +38,10 @@ func (cli *CLI) StderrHelpTemplate(name string, data interface{}) {
 
 // Prompt prints to STDERR
 func (cli *CLI) Prompt(line string) {
+	if cli.Log.Level == log.WarnLevel {
+		return
+	}
+
 	fmt.Fprintf(os.Stderr, "%s", line)
 	return
 }
