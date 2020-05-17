@@ -135,9 +135,10 @@ func (s *Service) sleepBeforeRetry(attempt int) (shouldReRun bool) {
 	return
 }
 
-func (s *Service) retryRequest(label string, client *http.Client, req *http.Request) ([]byte, error) {
+func (s *Service) retryRequest(label string, client *http.Client, req *http.Request) ([]byte, int, error) {
 	var body []byte
 
+	var respCode = 0
 	err := try.Do(func(attempt int) (bool, error) {
 		resp, err1 := client.Do(req)
 		if err1 != nil {
@@ -159,11 +160,12 @@ func (s *Service) retryRequest(label string, client *http.Client, req *http.Requ
 			err2 = fmt.Errorf("failed to read body contents for %s: %v", label, err2)
 			return s.sleepBeforeRetry(attempt), err2
 		}
+		respCode = resp.StatusCode
 
 		return false, nil
 	})
 
-	return body, err
+	return body, respCode, err
 }
 
 func (s *Service) submitSearchJob(auth AuthCookies, spl string) (sid string, err error) {
@@ -181,8 +183,9 @@ func (s *Service) submitSearchJob(auth AuthCookies, spl string) (sid string, err
 	}
 	s.authCookieDecorate(auth, client, req)
 	req.Header.Add("X-Splunk-Form-Key", auth.SplunkWebCSRF)
+	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
-	searchbody, err := s.retryRequest("SearchHistoryJob", client, req)
+	searchbody, _, err := s.retryRequest("SearchHistoryJob", client, req)
 	if err != nil {
 		return "", err
 	}
@@ -225,8 +228,9 @@ CHECK:
 			return err
 		}
 		s.authCookieDecorate(auth, client, req)
+		req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
-		body, err := s.retryRequest("searchJobStatusURL", client, req)
+		body, _, err := s.retryRequest("searchJobStatusURL", client, req)
 		if err != nil {
 			return err
 		}
@@ -295,8 +299,9 @@ PAGING:
 			return err
 		}
 		s.authCookieDecorate(auth, client, req)
+		req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
-		body, err := s.retryRequest(tmplname, client, req)
+		body, _, err := s.retryRequest(tmplname, client, req)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}

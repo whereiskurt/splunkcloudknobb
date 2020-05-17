@@ -92,6 +92,8 @@ func NewApp(config *config.Config) (a *App) {
 	_ = command("remove", rem.HelpHandler, helpCmd)
 	_ = command("lookup", rem.RemoveLookupFileHandler, remCmd)
 
+	flagS("Filename", &a.Config.Filename, []string{"filename", "name"}, a.RootCmd)
+
 	return a
 }
 

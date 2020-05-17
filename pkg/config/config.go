@@ -48,6 +48,7 @@ type Config struct {
 	VerboseLevel3  bool
 	VerboseLevel4  bool
 	VerboseLevel5  bool
+	Filename       string
 }
 
 // NewConfig holds common parameters

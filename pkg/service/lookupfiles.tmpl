@@ -16,5 +16,5 @@ manager/search/data/lookup-table-files/multidelete
 {{ end }}
 
 {{ define "lookupFileRemovePostBody" -}}
-splunk_form_key={{.SplunkWebCSRF}}&ctrl=remove&ctrl_link=/servicesNS/nobody/search/data/lookup-table-files/{{.Filename}}&ctrl_name={{.Filename}}'
+splunk_form_key={{.SplunkWebCSRF}}&ctrl=remove&ctrl_link=/servicesNS/nobody/search/data/lookup-table-files/{{.Filename}}&ctrl_name={{.Filename}}&showAppContext=True&pwnr=-&count={{.Count}}&app_only=False&search=&ns=-
 {{- end }}

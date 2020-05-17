@@ -27,6 +27,11 @@ The very first time you run the '`scknobb backup all`' the URL, username/passwor
 
 <img src="https://github.com/whereiskurt/splunkcloudknobb/blob/master/doc/images/kphgopher.png" width="250">
 
+## Release Notes (v0.0.2):
+
+Started adding '`list`' and '`remove`' commands for lookup (ie. '`scknobb list lookup`' and '`scknobb remove lookup`').
+Going to circle back and add '`scknobb backup lookup`' as well.
+
 ## Release Notes (v0.0.1):
 
 This release has '`backup`' command with support for '`reports`', '`dashboards`' and '`history`' (aka '`all`') subcommands.

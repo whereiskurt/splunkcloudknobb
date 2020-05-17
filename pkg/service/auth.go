@@ -16,7 +16,7 @@ type AuthCookies struct {
 	URL           string
 	Username      string
 	Password      string
-	SplunkUUID    string // experience_id
+	SplunkWebUUID string // experience_id
 	Cvalue        string
 	SessionID     string
 	Splunkd       string
@@ -31,20 +31,20 @@ func (a AuthCookies) String() string {
 	b.Password = "[unprotected]"
 	b.SplunkWebCSRF = "[unprotected]"
 	b.Splunkd = "[unprotected]"
-	b.SplunkUUID = "[unprotected]"
+	b.SplunkWebUUID = "[unprotected]"
 	spew.Config.DisableMethods = true
 	s := spew.Sdump(b)
 	return s
 }
 
 func (s *Service) authCookieDecorate(auth AuthCookies, client *http.Client, req *http.Request) {
-	req.Header.Add("X-Requested-With", "XMLHttpRequest")
 
 	var cookies []*http.Cookie
 	expire := time.Now().AddDate(0, 0, 1) //This date is ignored server side (apparently)
 
 	cookies = append(cookies, &http.Cookie{Name: "session_id_" + auth.CookiePort, Value: auth.SessionID, Expires: expire})
-	cookies = append(cookies, &http.Cookie{Name: "experience_id", Value: auth.SplunkUUID, Expires: expire})
+	cookies = append(cookies, &http.Cookie{Name: "experience_id", Value: auth.SplunkWebUUID, Expires: expire})
+	cookies = append(cookies, &http.Cookie{Name: "splunkweb_uid", Value: auth.SplunkWebUUID, Expires: expire})
 	cookies = append(cookies, &http.Cookie{Name: "splunkd_" + auth.CookiePort, Value: auth.Splunkd, Expires: expire})
 	cookies = append(cookies, &http.Cookie{Name: "splunkweb_csrf_token_" + auth.CookiePort, Value: auth.SplunkWebCSRF, Expires: expire})
 	cookies = append(cookies, &http.Cookie{Name: "token_key", Value: auth.SplunkWebCSRF, Expires: expire})
@@ -65,12 +65,12 @@ func (s *Service) Login(u string, username string, password string, cookiePort s
 	authd.CookiePort = cookiePort
 
 	// splunkuuid == experience_id also
-	cval, splunkuuid, err := s.step1(u)
-	if err != nil || cval == "" || splunkuuid == "" {
+	cval, splunkwebuuid, err := s.step1(u)
+	if err != nil || cval == "" || splunkwebuuid == "" {
 		err = fmt.Errorf("failed Authentication Step 1: invalid url, username, or password: values ('%s', '%s')", u, username)
 		return AuthCookies{}, err
 	}
-	authd.SplunkUUID = splunkuuid
+	authd.SplunkWebUUID = splunkwebuuid
 	authd.Cvalue = cval
 
 	tsession, err := s.step2(u, authd.CookiePort)
@@ -89,7 +89,7 @@ func (s *Service) Login(u string, username string, password string, cookiePort s
 	authd.SessionID = sessionid
 
 	//splunkwebcsrf also known as token_key
-	splunkd, splunkwebcsrf, expiry, err := s.step4(u, cval, splunkuuid, sessionid, username, password, authd.CookiePort)
+	splunkd, splunkwebcsrf, expiry, err := s.step4(u, cval, splunkwebuuid, sessionid, username, password, authd.CookiePort)
 	if err != nil || splunkd == "" || splunkwebcsrf == "" {
 		err = errors.New("failed Authentication Step 4: likey wrong username or password")
 		fmt.Printf("error: %v, splunkd_%s: %s, splunkweb_csrf_token_%s:%s\n", err, authd.CookiePort, splunkd, authd.CookiePort, splunkwebcsrf)
