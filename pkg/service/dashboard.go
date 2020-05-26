@@ -11,6 +11,7 @@ import (
 // Dashboard holds and object representing KO Dashboard
 type Dashboard struct {
 	Name     string
+	AppName  string
 	ID       string
 	Author   string
 	Updated  string
@@ -41,6 +42,7 @@ func translateDashboard(body *[]byte, chand chan interface{}) (total int, count 
 		d.Updated = e.Updated
 		d.ID = e.ID
 		d.Name = e.Name
+		d.AppName = e.Content.EaiAppName
 		d.Content = e.Content.EaiData
 		bb, err := json.MarshalIndent(e, "", "  ")
 		if err != nil {
