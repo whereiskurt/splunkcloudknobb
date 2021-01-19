@@ -56,7 +56,8 @@ func (c *Cmd) Dashboard(cmd *cobra.Command, args []string) {
 
 		config.CLI.Prompt(".")
 
-		filenamexml := filepath.Join(folder, fmt.Sprintf("%s.xml", d.Name))
+                os.MkdirAll(filepath.Join(folder, fmt.Sprintf("%s", d.AppName)), 0777)
+                filenamexml := filepath.Join(folder, fmt.Sprintf("%s", d.AppName), fmt.Sprintf("%s.xml", d.Name))
 		c.writeContent(d.Content, filenamexml)
 		c.touchFile(filenamexml, d.Updated)
 
